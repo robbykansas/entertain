@@ -10,7 +10,7 @@ app.get('/', (req, res) => {
   res.send('hello word')
 })
 
-app.get('/orchestrator', orchestratorController.getOrchestrator)
+app.get('/entertainme', orchestratorController.getOrchestrator)
 app.get('/movies', orchestratorController.getMovies)
 app.get('/tv', orchestratorController.getSeries)
 

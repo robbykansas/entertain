@@ -37,7 +37,7 @@ class orchestratorController {
   
   static async getOrchestrator(req, res){
     try{
-      const cache = await redis.get('orchestrator')
+      const cache = await redis.get('orchestrator-express')
       if (cache) {
         res.send(JSON.parse(cache))
       } else {
