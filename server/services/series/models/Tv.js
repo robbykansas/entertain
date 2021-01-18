@@ -12,8 +12,8 @@ class Tv {
   static insertOne(data){
     return Tvdb.insertOne(data)
   }
-  static updateOne(id, action){
-    return Tvdb.updateOne({_id: ObjectId(id)}, { $set: action})
+  static findOneAndUpdate(id, action){
+    return Tvdb.findOneAndUpdate({_id: ObjectId(id)}, { $set: action}, {returnOriginal: false})
   }
   static deleteOne(id){
     return Tvdb.deleteOne({_id: ObjectId(id)})

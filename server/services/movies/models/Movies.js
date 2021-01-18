@@ -12,8 +12,8 @@ class Movies {
   static insertOne(data){
     return Moviesdb.insertOne(data)
   }
-  static updateOne(id, action){
-    return Moviesdb.updateOne({_id: ObjectId(id)}, { $set: action})
+  static findOneAndUpdate(id, action){
+    return Moviesdb.findOneAndUpdate({_id: ObjectId(id)}, { $set: action}, {returnOriginal: false})
   }
   static deleteOne(id){
     return Moviesdb.deleteOne({_id: ObjectId(id)})

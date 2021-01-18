@@ -31,12 +31,16 @@ class TvController {
       })
       .catch(e => res.status(500).json('internal server error'))
   }
-  static updateOne(req, res){
+  static findOneAndUpdate(req, res){
     const id = req.params.id
     const obj = {
-      title: req.body.title
+      title: req.body.title,
+      overview: req.body.overview,
+      poster_path: req.body.poster_path,
+      popularity: req.body.popularity,
+      tags: req.body.tags
     }
-    Tv.updateOne(id, obj)
+    Tv.findOneAndUpdate(id, obj)
       .then(result => {
         res.status(200).json(result)
       })
