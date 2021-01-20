@@ -1,35 +1,13 @@
 import React, {useState} from 'react'
-import { useQuery, gql, useMutation } from '@apollo/client'
+import { useQuery, useMutation } from '@apollo/client'
 import Navbar from '../components/Navbar'
 import { InputTags } from 'react-bootstrap-tagsinput'
 import 'react-bootstrap-tagsinput/dist/index.css'
 import { useHistory, useParams } from 'react-router-dom'
+import { GET_MOVIE, PUT_MOVIE } from '../config/query'
+import Swal from 'sweetalert2'
+import '../components/Style/Preload.css'
 
-const GET_MOVIE = gql `
-query GetMovie($_id: ID!){
-  movie (_id: $_id) {
-    _id
-    title
-    overview
-    popularity
-    poster_path
-    tags
-  }
-}
-`
-
-const PUT_MOVIE = gql`
-mutation PutMovie($editMovie: InputData) {
-  putMovie(editMovie: $editMovie) {
-    _id
-    title
-    overview
-    popularity
-    poster_path
-    tags
-  }
-}
-`
 
 function EditMovie() {
   const history = useHistory()
@@ -46,7 +24,7 @@ function EditMovie() {
     poster_path: data.movie.poster_path,
     tags: data.movie.tags
   })
-  if (loading) return <p>Loading ... </p>
+  if (loading) return <div className="loader">Loading...</div>
   if (error) return <p>Error</p>
 
   function handleInput(event) {
@@ -59,8 +37,33 @@ function EditMovie() {
   }
   function handleSubmit(e) {
     e.preventDefault()
-    putMovie({variables: {editMovie: getMovie}})
-    history.push('/')
+    let msg = []
+    if (getMovie.title === '') {
+      msg.push('Title is required')
+    }
+    if (getMovie.overview === '') {
+      msg.push('Overview is required')
+    }
+    if (getMovie.poster_path === '') {
+      msg.push('Poster is required')
+    }
+    if (getMovie.popularity === '') {
+      msg.push('Popularity is required')
+    }
+    if (getMovie.tags.length === 0) {
+      msg.push('Tags is required')
+    }
+    if (msg.length === 0) {
+      putMovie({variables: {editMovie: getMovie}})
+        .then(data => history.push('/'))
+    } else {
+      Swal.fire({
+        icon: 'info',
+        text: msg.map(message => {return "\n" + message})
+      })
+    }
+    // putMovie({variables: {editMovie: getMovie}})
+    // history.push('/')
   }
 
   return(
@@ -83,7 +86,7 @@ function EditMovie() {
           </div>
           <div className="form-group">
             <label htmlFor="popularity">Popularity</label>
-            <input type="number" name="popularity" value={getMovie.popularity} onChange={handleInput} className="form-control" placeholder="Input Popularity" />
+            <input type="number" step="0.1" max="10" name="popularity" value={getMovie.popularity} onChange={handleInput} className="form-control" placeholder="Ex: 7,5 Max: 10" />
           </div>
           <div className="form-group">
             <label htmlFor="tags">Tags</label>

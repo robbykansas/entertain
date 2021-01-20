@@ -1,42 +1,20 @@
 import React from 'react'
-import { useQuery, gql } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 import ListCard from '../components/ListCard'
 import Navbar from '../components/Navbar'
 import '../components/Style/Preload.css'
-
-const GET_DATA = gql`
-query {
-  movies {
-    _id
-    title
-    overview
-    popularity
-    poster_path
-    tags
-  }
-  tvSeries {
-    _id
-    title
-    overview
-    popularity
-    poster_path
-    tags
-  }
-}
-`
+import { GET_DATA } from '../config/query'
 
 function MainPage(){
-  const { loading, error, data, refetch } = useQuery(GET_DATA)
+  const { loading, error, data } = useQuery(GET_DATA)
   if (loading) return <div className="loader">Loading...</div>
   if (error) return <p>Error</p>
-  function refetchData() {
-    refetch()
-  }
+  
   return (
     <div>
       <Navbar />
       <div className="container">
-      <h2>Movies</h2>
+      <h2 className="mt-2">Movies</h2>
         <div className="row flex-row flex-nowrap d-flex align-items-stretch pb-3" style={{overflow: 'auto'}}>
           {
             data.movies.map(list => {
@@ -51,7 +29,7 @@ function MainPage(){
           {
             data.tvSeries.map(list => {
               return (
-                <ListCard key={list._id} list={list} refetch={refetchData}/>
+                <ListCard key={list._id} list={list} />
               )
             })
           }

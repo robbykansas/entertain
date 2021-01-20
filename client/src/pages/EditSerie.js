@@ -1,35 +1,12 @@
 import React, {useState} from 'react'
-import { useQuery, gql, useMutation } from '@apollo/client'
+import { useQuery, useMutation } from '@apollo/client'
 import Navbar from '../components/Navbar'
 import { InputTags } from 'react-bootstrap-tagsinput'
 import 'react-bootstrap-tagsinput/dist/index.css'
 import { useHistory, useParams } from 'react-router-dom'
-
-const GET_SERIE = gql`
-query GetSerie($_id: ID!){
-  tvSerie (_id: $_id) {
-    _id
-    title
-    overview
-    popularity
-    poster_path
-    tags
-  }
-}
-`
-
-const PUT_SERIE = gql`
-mutation PutSerie($editSerie: InputData) {
-  putSerie(editSerie: $editSerie) {
-    _id
-    title
-    overview
-    popularity
-    poster_path
-    tags
-  }
-}
-`
+import { GET_SERIE, PUT_SERIE } from '../config/query'
+import Swal from 'sweetalert2'
+import '../components/Style/Preload.css'
 
 function EditSerie() {
   const history = useHistory()
@@ -38,7 +15,6 @@ function EditSerie() {
   const { loading, error, data } = useQuery(GET_SERIE, {
     variables: { _id: params },
   })
-  console.log(params)
   const [getSerie, setGetSerie] = useState({
     _id: data.tvSerie._id,
     title: data.tvSerie.title,
@@ -48,7 +24,7 @@ function EditSerie() {
     tags: data.tvSerie.tags
   })
   
-  if (loading) return <p>Loading ... </p>
+  if (loading) return <div className="loader">Loading...</div>
   if (error) return <p>Error</p>
 
   function handleInput(event) {
@@ -59,8 +35,33 @@ function EditSerie() {
   }
   function handleSubmit(e) {
     e.preventDefault()
-    putSerie({variables: {editSerie: getSerie}})
-    history.push('/')
+    let msg = []
+    if (getSerie.title === '') {
+      msg.push('Title is required')
+    }
+    if (getSerie.overview === '') {
+      msg.push('Overview is required')
+    }
+    if (getSerie.poster_path === '') {
+      msg.push('Poster is required')
+    }
+    if (getSerie.popularity === '') {
+      msg.push('Popularity is required')
+    }
+    if (getSerie.tags.length === 0) {
+      msg.push('Tags is required')
+    }
+    if (msg.length === 0) {
+      putSerie({variables: {editSerie: getSerie}})
+        .then(data => history.push('/'))
+    } else {
+      Swal.fire({
+        icon: 'info',
+        text: msg.map(message => {return "\n" + message})
+      })
+    }
+    // putSerie({variables: {editSerie: getSerie}})
+    // history.push('/')
   }
 
   return(
@@ -83,7 +84,7 @@ function EditSerie() {
           </div>
           <div className="form-group">
             <label htmlFor="popularity">Popularity</label>
-            <input type="number" name="popularity" value={getSerie.popularity} onChange={handleInput} className="form-control" placeholder="Input Popularity" />
+            <input type="number" step="0.1" max="10" name="popularity" value={getSerie.popularity} onChange={handleInput} className="form-control" placeholder="Ex: 7,5 Max: 10" />
           </div>
           <div className="form-group">
             <label htmlFor="tags">Tags</label>

@@ -8,6 +8,7 @@ import DetailMovie from './pages/DetailMovie'
 import DetailSerie from './pages/DetailSerie'
 import EditMovie from './pages/EditMovie'
 import EditSerie from './pages/EditSerie'
+import Favorites from './pages/Favorites'
 
 function App() {
   return (
@@ -25,6 +26,9 @@ function App() {
           </Route>
           <Route path='/movie/Edit/:id'>
             <EditMovie />
+          </Route>
+          <Route path='/favorites'>
+            <Favorites />
           </Route>
           <Route path='/movies'>
             <Movies />

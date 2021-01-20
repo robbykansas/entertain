@@ -12,7 +12,6 @@ class MovieController {
     const id = req.params.id
     Movies.findOne(id)
       .then(result => {
-        console.log(id)
         res.status(201).json(result)
       })
       .catch(e => res.status(500).json('internal server error'))

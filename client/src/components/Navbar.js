@@ -1,8 +1,10 @@
 import React from 'react'
-import { useHistory } from 'react-router-dom'
+import { useHistory, useParams } from 'react-router-dom'
 
 function Navbar() {
   const history = useHistory()
+  const params = useParams().id
+
   function goMain() {
     history.push('/')
   }
@@ -13,8 +15,12 @@ function Navbar() {
     history.push('/tv')
   }
   function goFavorites() {
-    console.log('movies')
+    history.push('/favorites')
   }
+  function goEdit() {
+    history.push(`/movie/Edit/${params}`)
+  }
+
   return (
     <div>
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark justify-content-between">
@@ -33,6 +39,10 @@ function Navbar() {
               <a className="nav-link" href="#/goFavorites" onClick={goFavorites}>Favorites</a>
             </li>
           </ul>
+          <div className="mr-2">
+            {history.location.pathname === `/movie/Detail/${params}` && <button style={{float: 'right'}} className="btn btn-outline-primary" onClick={goEdit}>Edit</button>}
+            {history.location.pathname === `/tv/Detail/${params}` && <button style={{float: 'right'}} className="btn btn-outline-primary" onClick={goEdit}>Edit</button>}
+          </div>
         </div>
       </nav>
     </div>

@@ -1,44 +1,25 @@
 import React, { useState } from 'react'
-import { useQuery, gql, useMutation } from '@apollo/client'
+import { useQuery, useMutation } from '@apollo/client'
 import ListCard from '../components/ListCard'
 import Navbar from '../components/Navbar'
 import { InputTags } from 'react-bootstrap-tagsinput'
 import 'react-bootstrap-tagsinput/dist/index.css'
 import '../components/Style/Preload.css'
-
-const GET_MOVIES = gql`
-query {
-  movies {
-    _id
-    title
-    overview
-    popularity
-    poster_path
-    tags
-  }
-}
-`
-const ADD_MOVIE = gql`
-mutation AddMovie($newMovie: InputData) {
-  addMovie(newMovie: $newMovie) {
-    _id
-    title
-    overview
-    popularity
-    poster_path
-    tags
-  }
-}
-`
+import { GET_MOVIES, ADD_MOVIE } from '../config/query'
+import Swal from 'sweetalert2'
 
 function Movies(){
   const { loading, error, data, refetch } = useQuery(GET_MOVIES)
-  const [addMovie] = useMutation(ADD_MOVIE)
+  const [addMovie] = useMutation(ADD_MOVIE, {
+    refetchQueries: [
+      { query: GET_MOVIES}
+    ]
+  })
   const [getMovie, setGetMovie] = useState({
     title: '',
     overview: '',
     poster_path: '',
-    popularity: 0,
+    popularity: '',
     tags: []
   })
   if (loading) return <div className="loader">Loading...</div>
@@ -55,16 +36,34 @@ function Movies(){
   
   function handleSubmit(e) {
     e.preventDefault()
-    addMovie({variables: {newMovie: getMovie}})
-      .then(data => {
-        refetch()
+    let msg = []
+    if (getMovie.title === '') {
+      msg.push('Title is required')
+    }
+    if (getMovie.overview === '') {
+      msg.push('Overview is required')
+    }
+    if (getMovie.poster_path === '') {
+      msg.push('Poster is required')
+    }
+    if (getMovie.popularity === '') {
+      msg.push('Popularity is required')
+    }
+    if (getMovie.tags.length === 0) {
+      msg.push('Tags is required')
+    }
+    if (msg.length === 0) {
+      addMovie({variables: {newMovie: getMovie}})
+        .then(data => refetch())
+    } else {
+      Swal.fire({
+        icon: 'info',
+        text: msg.map(message => {return "\n" + message})
       })
-      .catch(e => console.log(e))
+    }
+    // addMovie({variables: {newMovie: getMovie}})
   }
 
-  function refetchData() {
-    refetch()
-  }
   return(
     <div>
       <Navbar />
@@ -85,11 +84,11 @@ function Movies(){
           </div>
           <div className="form-group">
             <label htmlFor="popularity">Popularity</label>
-            <input type="number" step="0.1" max="100" name="popularity" value={getMovie.popularity} onChange={handleInput} className="form-control" placeholder="Input Popularity" />
+            <input type="number" step="0.1" max="10" name="popularity" value={getMovie.popularity} onChange={handleInput} className="form-control" placeholder="Ex: 7,5 Max: 10" />
           </div>
           <div className="form-group">
             <label htmlFor="tags">Tags</label>
-            <InputTags placeholder="Input Tags, ex: Adventure Horror" values={getMovie.tags} onTags={value => setGetMovie({...getMovie, tags: value.values})} />
+            <InputTags placeholder="Ex: Adventure Horror" values={getMovie.tags} onTags={value => setGetMovie({...getMovie, tags: value.values})} />
           </div>
           <button type="submit" className="btn btn-primary mt-1">Submit</button>
         </form>
@@ -98,7 +97,7 @@ function Movies(){
           {
             data.movies.map(list => {
               return (
-                <ListCard key={list._id} list={list} refetch={refetchData}/>
+                <ListCard key={list._id} list={list} />
               )
             })
           }

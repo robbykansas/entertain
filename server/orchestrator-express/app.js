@@ -1,16 +1,15 @@
 const express = require('express')
 const app = express()
 const port = 4000
+const routes = require('./router')
 const orchestratorController = require('./controllers/orchestratorController')
 
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 
-app.get('/', (req, res) => {
-  res.send('hello word')
-})
+app.use(routes)
 
-app.get('/entertainme', orchestratorController.getOrchestrator)
+
 app.get('/movies', orchestratorController.getMovies)
 app.get('/tv', orchestratorController.getSeries)
 
