@@ -22,10 +22,10 @@ function DetailSerie() {
           <h5>{data.tvSerie.title}</h5>
           <p>Overview: {data.tvSerie.overview}</p>
           <p className="mb-auto">Popularity:</p>
-          <StarRatings rating={data.movie.popularity} numberOfStars={10} starDimension="25"/> <br />
+          <StarRatings rating={data.tvSerie.popularity} numberOfStars={10} starDimension="25"/> <br />
           <p className="mt-3 mb-auto">Tags:</p>
           {
-            data.movie.tags.map((tag, index) => <i className="fas fa-tag mr-2 mt-2" key={index}>{tag}</i> )
+            data.tvSerie.tags.map((tag, index) => <i className="fas fa-tag mr-2 mt-2" key={index}>{tag}</i> )
           }
         </div>
       </div>
